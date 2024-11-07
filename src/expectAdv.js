@@ -1,5 +1,3 @@
-const { expect } = require('expect-webdriverio');
-
 /**
  * This function makes using expect easier by just passing the assertion type and values
  * it will not fail the test right away but allow the other expects to be executed
@@ -11,6 +9,7 @@ const { expect } = require('expect-webdriverio');
  * @returns {Promise<void>}
  */
 async function expectAdv(assertionType, actual, expected = '', message = '', operator = '') {
+  const { expect } = await import('expect-webdriverio');
   const softAssert = expect;
   let errmsg;
   try {
