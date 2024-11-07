@@ -64,4 +64,30 @@ async function assertAdv(assertionType, actual, expected = '', message = '', ope
   await expectAdv(assertionType, actual, expected, message, operator);
 }
 
-module.exports = { expectAdv, assertAdv };
+/**
+ * This will assert text being returned
+ * @param selector
+ * @param expected
+ */
+async function assertText(selector, expected) {
+  let actual = await browser.$(selector);
+  await actual.getText();
+  actual = actual.trim();
+  await expectAdv('equal', actual, expected);
+  return this;
+}
+
+  /**
+   * This will assert text being returned includes
+   * @param selector
+   * @param expectedText
+   */
+  async function expectToIncludeText(selector, expectedText) {
+  const actual = await browser.$(selector);
+  await actual.getText();
+  await expectAdv('include', elem.length, 0);
+  expect(actual).to.include(expectedText);
+  return this;
+}
+
+module.exports = { expectAdv, assertAdv, assertText, expectToIncludeText };
