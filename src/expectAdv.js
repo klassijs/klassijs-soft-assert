@@ -14,22 +14,26 @@ async function expectAdv(assertionType, actual, expected = '', message = '', ope
   let errmsg;
   try {
     const getAssertionType = {
+      isDisplayed: () => softAssert(actual).toBeDisplayed(),
+      isExisting: () => softAssert(actual).toExist(),
+      toBePresent: () => softAssert(actual).toBePresent(),
+      toBeExisting: () => softAssert(actual).toBeExisting(),
+      toBeFocused: () => softAssert(actual).toBeFocused(),
+
       equal: () => softAssert(actual).to.equal(expected),
       contain: () => softAssert(actual).to.contain(expected),
-      exist: () => softAssert(actual, message).to.exist,
-      exists: () => assert.exists(actual, message),
       doesNotExist: () => softAssert(actual, message).to.not.exist,
       doesNotContain: () => softAssert(actual).to.not.contain(expected),
       oneOf: () => softAssert(actual).to.be.oneOf(expected),
       toInclude: () => softAssert(actual).to.include(expected),
+      toNotEqual: () => softAssert(actual).to.not.equal(expected, message),
+
+      exists: () => assert.exists(actual, message),
       include: () => assert.include(actual, expected),
       isTrue: () => assert.isTrue(actual, message),
       isFalse: () => assert.isFalse(actual, message),
-      notEqual: () => softAssert(actual).to.not.equal(expected, message),
       fail: () => assert.fail(actual, expected, message, operator),
       isAbove: () => assert.isAbove(actual, expected, message),
-      toBeDisplayed: () => softAssert(actual).toBeDisplayed(),
-
       default: () => console.info('Invalid assertion type: =======>>>>>>>>>>> ', assertionType),
     };
     (getAssertionType[assertionType] || getAssertionType['default'])();
