@@ -143,7 +143,7 @@ async function handleTextAssertion(actual, expected) {
 }
 
 // Function to throw collected errors at the end of the test run
-function throwCollectedErrors() {
+async function throwCollectedErrors() {
   if (errors.length > 0) {
     const errorMessages = errors.map(err => err.message).join('\n');
     cucumberThis.attach(`<div style="color:red;">Collected assertion errors:\n${errorMessages}</div>`);
@@ -263,4 +263,4 @@ async function assertAdv(actual, assertionType, expected, message, operator){
 //   return this;
 // }
 
-module.exports = { expectAdv, throwCollectedErrors };
+module.exports = { expectAdv, assertAdv, throwCollectedErrors };
