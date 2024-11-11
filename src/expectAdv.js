@@ -143,13 +143,17 @@ async function handleTextAssertion(actual, expected) {
 }
 
 // Function to throw collected errors at the end of the test run
-async function throwCollectedErrors() {
+function throwCollectedErrors() {
   if (errors.length > 0) {
     const errorMessages = errors.map(err => err.message).join('\n');
-    cucumberThis.attach(`<div style="color:red;">Collected assertion errors:\n${errorMessages}</div>`);
+    if (cucumberThis && cucumberThis.attach) {
+      cucumberThis.attach(`<div style="color:red;">Collected assertion errors:\n${errorMessages}</div>`);
+    }
     throw new Error(`Collected assertion errors:\n${errorMessages}`);
   } else {
-    cucumberThis.attach(`<div style="color:green;">No assertion errors collected.</div>`);
+    if (cucumberThis && cucumberThis.attach) {
+      cucumberThis.attach(`<div style="color:green;">No assertion errors collected.</div>`);
+    }
   }
 }
 
