@@ -1,11 +1,35 @@
 /**
- * This is the function for performing asserts and passing the results to the report
+ * This function makes using assert easier by just passing the assertion type and values
+ * it will not fail the test right away but allow the other asserts to be executed
+ * @param actual {mixed}
+ * @param expected {any}
+ * @param message {string}
+ * @param operator {any}
+ * @param assertionType {string}
+ * @returns {Promise<void>}
+ */
+const errors = [];
+let consoleOutput = '';
+
+/**
+ * This function is for collecting the console errors
+ * @type {{(message?: any, ...optionalParams: any[]): void, (...data: any[]): void}}
+ */
+const originalConsoleError = console.error;
+console.error = function (message) {
+  consoleOutput += message + '\n';
+  originalConsoleError.apply(console, arguments);
+};
+
+/**
+ * This function makes using assert easier by just passing the assertion type and values
  * @param actual
  * @param assertionType
  * @param expected
+ * @param message
+ * @param operator
+ * @returns {Promise<void>}
  */
-const errors = [];
-
 async function expectAdv(actual, assertionType, expected, message, operator) {
   const { expect } = await import('expect-webdriverio');
   const softAssert = expect;
@@ -14,19 +38,31 @@ async function expectAdv(actual, assertionType, expected, message, operator) {
     const getAssertionType = {
       equals: async () => await softAssert(actual).toEqual(expected),
       contains: async () => await softAssert(actual).toContain(expected),
-      exists: async () => await softAssert(await actual).toBeExisting(),
       doesexist: async () => await softAssert(await actual).toBeExisting(),
       doesnotexist: async () => await softAssert(await actual).not.toBeExisting(),
-      isenabled: async () => await softAssert(await actual).toBeEnabled(),
       isnotenabled: async () => await softAssert(await actual).not.toBeEnabled(),
-      isdisabled: async () => await softAssert(await actual).toBeDisabled(),
       doesnotcontain: async () => await softAssert(actual).not.toContain(expected),
+      isdisabled: async () => await softAssert(await actual).toBeDisabled(),
+      tobedisabled: async () => await softAssert(await actual).toBeDisabled(),
+      tobeclickable: async () => await softAssert(await actual).toBeClickable(),
+      isenabled: async () => await softAssert(await actual).toBeEnabled(),
+      tobeenabled: async () => await softAssert(await actual).toBeEnabled(),
+      tobeselected: async () => await softAssert(await actual).toBeSelected(),
+      tobechecked: async () => await softAssert(await actual).toBeChecked(),
+      tohavehtml: async () => await softAssert(await actual).toHaveHTML(expected),
+      tobefocused: async () => await softAssert(await actual).toBeFocused(),
+      tobepresent: async () => await softAssert(await actual).toBePresent(),
+      tobedisplayed: async () => await softAssert(await actual).toBeDisplayed(),
+      exists: async () => await softAssert(await actual).toBeExisting(),
+      toexist: async () => await softAssert(await actual).toBeExisting(),
+      tobeexisting: async () => await softAssert(await actual).toBeExisting(),
+      tohavetitle: async () => await softAssert(await actual).toHaveTitle(expected),
+      tohaveurl: async () => await softAssert(await actual).toHaveUrl(expected),
       tohavetext: async () => await handleTextAssertion(actual, expected),
       containstext: async () => await handleTextAssertion(actual, expected),
 
-      // Default handler for unknown assertion types
       default: () => {
-        const errorMsg = `Invalid assertion type: "${assertionType}". Valid assertion types are: "equals", "contains", "exists", "isenabled", "isdisabled", "doesnotexist", "doesnotcontain", "tohavetext", "containstext".`;
+        const errorMsg = `Invalid assertion type: "${assertionType}". Valid assertion types are: "equals", "contains", "doesexist", "doesnotexist", "isnotenabled", "doesnotcontain", "isdisabled", "tobedisabled", "tobeclickable", "isenabled", "tobeenabled", "tobeselected", "tobechecked", "tohavehtml", "tobefocused", "tobepresent", "tobedisplayed", "exists", "toexist", "tobeexisting", "tohavetitle", "tohaveurl", "tohavetext", "containstext".`;
         throw new Error(errorMsg);
       }
     };
@@ -36,7 +72,7 @@ async function expectAdv(actual, assertionType, expected, message, operator) {
       cucumberThis.attach(`<div style="color:green;"> ${message} </div>`);
     }
   } catch (err) {
-    const filteredActual = actual.replace(/[<>]/g, '');
+    const filteredActual = typeof actual === 'string' ? actual.replace(/[<>]/g, '') : actual;
     const errmsg =
       `Assertion Failure: Invalid Assertion Type = ${assertionType}` +
       '\n' +
@@ -44,10 +80,16 @@ async function expectAdv(actual, assertionType, expected, message, operator) {
     if (cucumberThis && cucumberThis.attach) {
       cucumberThis.attach(`<div style="color:red;"> ${errmsg} </div>`);
     }
-    errors.push(err); // Collect the error
+    errors.push(err);
   }
 }
 
+/**
+ * This function handles text assertions
+ * @param actual
+ * @param expected
+ * @returns {Promise<void>}
+ */
 async function handleTextAssertion(actual, expected) {
   const { expect } = await import('expect-webdriverio');
   const softAssert = expect;
@@ -61,10 +103,11 @@ async function handleTextAssertion(actual, expected) {
   }
 }
 
-// Function to throw collected errors at the end of the test run
+/**
+ * This function throws all the collected errors at the end of the test run
+ */
 function throwCollectedErrors() {
   if (errors.length > 0) {
-    const errorMessages = errors.map(err => err.message).join('\n');
     const formattedErrorMessages = errors.map(err => {
       const match = err.message.match(/Expected substring: (.*)\nReceived string: (.*)/);
       if (match) {
@@ -72,10 +115,13 @@ function throwCollectedErrors() {
       }
       return err.message;
     }).join('\n');
+    const fullErrorMessage = `Collected assertion errors:\n${formattedErrorMessages}`;
+    const cleanConsoleOutput = consoleOutput.replace(/\x1b\[[0-9;]*m/g, ''); // Remove color codes
+    const consoleMessage = `<div style="color:red;">${fullErrorMessage}</div>\n${cleanConsoleOutput}`;
     if (cucumberThis && cucumberThis.attach) {
-      cucumberThis.attach(`<div style="color:red;">Collected assertion errors:\n${formattedErrorMessages}</div>`);
+      cucumberThis.attach(`Attachment (text/plain): ${consoleMessage}`);
     }
-    throw new Error(`Collected assertion errors:\n${formattedErrorMessages}`);
+    throw new Error(consoleMessage);
   } else {
     if (cucumberThis && cucumberThis.attach) {
       cucumberThis.attach(`<div style="color:green;">No assertion errors collected.</div>`);
@@ -83,14 +129,11 @@ function throwCollectedErrors() {
   }
 }
 
-
-
-// TODO: add function to record failed assertions and pass it to the end so that the test fails.
 /**
  * This function makes using assert easier by just passing the assertion type and values
  * it will not fail the test right away but allow the other asserts to be executed
+ * @param actual {any}
  * @param assertionType {string}
- * @param actual {mixed}
  * @param expected {any}
  * @param message {string}
  * @param operator {any}
@@ -98,100 +141,6 @@ function throwCollectedErrors() {
  */
 async function assertAdv(actual, assertionType, expected, message, operator){
   await expectAdv(actual, assertionType, expected, message, operator);
-};
-
-
-// /**
-//  * This function makes using expect easier by just passing the assertion type and values
-//  * it will not fail the test right away but allow the other expects to be executed
-//  * @param assertionType {string}
-//  * @param actual {any}
-//  * @param expected {any}
-//  * @param message {string}
-//  * @param operator {any}
-//  * @returns {Promise<void>}
-//  */
-// async function expectAdv(actual, assertionType, expected = '', message = '', operator = '') {
-//   const { expect } = await import('expect-webdriverio');
-//   const softAssert = expect;
-//   let msg;
-//   try {
-//     const getAssertionType = {
-//       isDisplayed: async () => (await softAssert(await actual).toBeDisplayed()),
-//       isExisting: () => softAssert(actual).toExist(),
-//       toBePresent: async () => (await softAssert(await actual).toBePresent()),
-//       toBeExisting: () => softAssert(actual).toBeExisting(),
-//       toBeFocused: () => softAssert(actual).toBeFocused(),
-//
-//       equal: () => softAssert(actual).to.equal(expected),
-//       contain: () => softAssert(actual).to.contain(expected),
-//       doesNotExist: () => softAssert(actual, message).to.not.exist,
-//       doesNotContain: () => softAssert(actual).to.not.contain(expected),
-//       oneOf: () => softAssert(actual).to.be.oneOf(expected),
-//       toInclude: () => softAssert(actual).to.include(expected),
-//       toNotEqual: () => softAssert(actual).to.not.equal(expected, message),
-//
-//       exists: async () => (await softAssert(await actual).toBeExisting()),
-//       isClickable: async () => (await softAssert(await actual).isClickable),
-//       include: () => assert.include(actual, expected),
-//       isTrue: () => assert.isTrue(actual, message),
-//       isFalse: () => assert.isFalse(actual, message),
-//       fail: () => assert.fail(actual, expected, message, operator),
-//       isAbove: () => assert.isAbove(actual, expected, message),
-//       default: () => console.info('Invalid assertion type: =======>>>>>>>>>>> ', assertionType),
-//     };
-//     (getAssertionType[assertionType] || getAssertionType['default'])();
-//     msg = `Assertion Passes: Valid Assertion Type = ${assertionType}`;
-//     cucumberThis.attach(`<div style="color:green;"> ${msg} </div>`);
-//   } catch (err) {
-//     const filteredActual = actual.replace(/[<>]/g, '');
-//     msg =
-//       `Assertion Failure: Invalid Assertion Type = ${assertionType}` +
-//       '\n' +
-//       `Assertion failed: expected ${filteredActual} to ${assertionType} ${expected}`;
-//     cucumberThis.attach(`<div style="color:red;"> ${msg} </div>`);
-//   }
-// }
-//
-// // TODO: add function to record failed assertions and pass it to the end so that the test fails.
-// /**
-//  * This function makes using assert easier by just passing the assertion type and values
-//  * it will not fail the test right away but allow the other asserts to be executed
-//  * @param assertionType {string}
-//  * @param actual {mixed}
-//  * @param expected {any}
-//  * @param message {string}
-//  * @param operator {any}
-//  * @returns {Promise<void>}
-//  */
-// async function assertAdv(assertionType, actual, expected = '', message = '', operator = '') {
-//   await expectAdv(assertionType, actual, expected, message, operator);
-// }
-
-// /**
-//  * This will assert text being returned
-//  * @param selector
-//  * @param expected
-//  */
-// async function assertText(selector, expected) {
-//   let actual = await browser.$(selector);
-//   await actual.getText();
-//   actual = actual.trim();
-//   await expectAdv('equal', actual, expected);
-//   return this;
-// }
-
-//   /**
-//    * This will assert text being returned includes
-//    * @param selector
-//    * @param expectedText
-//    */
-//   async function expectToIncludeText(selector, expectedText) {
-//   const actual = await browser.$(selector);
-//   await actual.getText();
-//   await expectAdv('include', elem.length, 0);
-//   expect(actual).to.include(expectedText);
-//   return this;
-// }
+}
 
 module.exports = { expectAdv, assertAdv, throwCollectedErrors };

@@ -2,6 +2,14 @@
   "name": "klassijs-expectadv",
   "version": "1.0.0",
   "description": "",
+  "creator": {
+    "name": "Larry Goddard",
+    "email": "larryg@klassitech.co.uk",
+    "X": "https://twitter.com/larryG_01",
+    "linkedin": "https://linkedin.com/in/larryg",
+    "youtube": "https://youtube.com/@LarryG_01"
+  },
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
