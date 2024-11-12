@@ -89,6 +89,9 @@
 //   // }
 // }
 
+// const { expect } = import('expect-webdriverio');
+// const softAssert = expect;
+
 const errors = [];
 
 async function expectAdv(actual, assertionType, expected, message, operator) {
@@ -117,14 +120,18 @@ async function expectAdv(actual, assertionType, expected, message, operator) {
     };
     await (getAssertionType[assertionType] || getAssertionType['default'])();
     message = `Assertion Passes: Valid Assertion Type = ${assertionType}`;
-    cucumberThis.attach(`<div style="color:green;"> ${message} </div>`);
+    if (cucumberThis && cucumberThis.attach) {
+      cucumberThis.attach(`<div style="color:green;"> ${message} </div>`);
+    }
   } catch (err) {
     const filteredActual = actual.replace(/[<>]/g, '');
     const errmsg =
       `Assertion Failure: Invalid Assertion Type = ${assertionType}` +
       '\n' +
       `Assertion failed: expected ${filteredActual} to ${assertionType} ${expected}`;
-    cucumberThis.attach(`<div style="color:red;"> ${errmsg} </div>`);
+    if (cucumberThis && cucumberThis.attach) {
+      cucumberThis.attach(`<div style="color:red;"> ${errmsg} </div>`);
+    }
     errors.push(err); // Collect the error
   }
 }
@@ -146,10 +153,17 @@ async function handleTextAssertion(actual, expected) {
 function throwCollectedErrors() {
   if (errors.length > 0) {
     const errorMessages = errors.map(err => err.message).join('\n');
+    const formattedErrorMessages = errors.map(err => {
+      const match = err.message.match(/Expected substring: (.*)\nReceived string: (.*)/);
+      if (match) {
+        return `Expected substring: ${match[1]}\nReceived string: ${match[2]}`;
+      }
+      return err.message;
+    }).join('\n');
     if (cucumberThis && cucumberThis.attach) {
-      cucumberThis.attach(`<div style="color:red;">Collected assertion errors:\n${errorMessages}</div>`);
+      cucumberThis.attach(`<div style="color:red;">Collected assertion errors:\n${formattedErrorMessages}</div>`);
     }
-    throw new Error(`Collected assertion errors:\n${errorMessages}`);
+    throw new Error(`Collected assertion errors:\n${formattedErrorMessages}`);
   } else {
     if (cucumberThis && cucumberThis.attach) {
       cucumberThis.attach(`<div style="color:green;">No assertion errors collected.</div>`);
