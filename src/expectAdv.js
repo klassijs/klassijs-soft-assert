@@ -4,94 +4,6 @@
  * @param assertionType
  * @param expected
  */
-
-// async function expectAdv(
-//   actual = WebdriverIO.Element | string,
-//   assertionType = AssertionType,
-//   expected = any
-// ) {
-//   // Early exit if the test has already ended
-//   // if (ASB.get("TEST_ENDED")) {
-//   //   await log(`WARN: Assertion ${assertionType} skipped because the test has already ended`);
-//   //   return;
-//   // }
-//
-//   let invalidAssertion = false;
-//   let failed = false;
-//   let errorMessage = "";
-//
-//   const softAssert = expect; // Alias for Jest expect function
-//   assertionType = assertionType.replace(/\s+/g, "").toLowerCase();
-//
-//   // Helper function to add allure attachments
-//   // const addAllureAttachment = (title: string, content: string) => {
-//   //   allureReporter.addAttachment(title, content, 'text/plain');
-//   // };
-//
-//   // Helper function to handle logging and errors
-//   // const handleFailure = async ({ title = '', content}) => {
-//   //   // ASB.set("alreadyFailed", true);
-//   //   console.log(title);
-//   //   // addAllureAttachment(title, content);
-//   // };
-//
-//   // Define possible assertion actions
-//   const getAssertionAction = {
-//     equals: async () => await softAssert(actual).toEqual(expected),
-//     contains: async () => await softAssert(actual).toContain(expected),
-//     exists: async () => await softAssert(await actual).toBeExisting(),
-//     doesexist: async () => await softAssert(await actual).toBeExisting(),
-//     doesnotexist: async () => await softAssert(await actual).not.toBeExisting(),
-//     isenabled: async () => await softAssert(await actual).toBeEnabled(),
-//     isnotenabled: async () => await softAssert(await actual).not.toBeEnabled(),
-//     isdisabled: async () => await softAssert(await actual).toBeDisabled(),
-//     doesnotcontain: async () => await softAssert(actual).not.toContain(expected),
-//     tohavetextcontaining: async () => await softAssert(actual).toHaveTextContaining(expected),
-//     containstext: async () => await softAssert(actual).toHaveTextContaining(expected),
-//
-//     // Default handler for unknown assertion types
-//     default: async () => {
-//       // invalidAssertion = true;
-//       // failed = true;
-//       const errorMsg = `Invalid assertion type: "${assertionType}". Valid assertion types are: "equals", "contains", "exists", "isenabled", "isdisabled", "doesnotexist", "doesnotcontain", "tohavetextcontaining", "containstext".`;
-//       await handleFailure({ title: 'Assertion Failure ########################## 456', content: errorMsg });
-//     }
-//   };
-//
-//   // Perform the assertion or handle unknown assertion types
-//   // try {
-//   //   const assertionAction = getAssertionAction[assertionType] || getAssertionAction['default'];
-//   //   await assertionAction();
-//   //
-//   //   // Logging for successful assertions
-//   //   if (!invalidAssertion && !failed) {
-//   //     // addAllureAttachment(`Assertion Pass`, `"${actual}" ${assertionType} "${expected}"`);
-//   //     const passMessage = `PASS ######################: "${actual}" ${assertionType} "${expected}"`;
-//   //     await log(passMessage);
-//   //   }
-//   //
-//   // } catch (error) {
-//   //   // Handle failure logging and reporting based on the type of assertion
-//   //   if (expected === null) {
-//   //     // const failMessage = `FAIL: Selector "${ASB.get("ELEMENT_SELECTOR")}" ${assertionType} - ${error}`;
-//   //     const failMessage = `FAIL: Selector ${assertionType} - ${error}`;
-//   //     handleFailure({ title: 'Object Assertion Error ######################', content: failMessage });
-//   //   } else {
-//   //     let failMessage = `FAIL: "${actual}" ${assertionType} "${expected}" - ${error}`;
-//   //     await handleFailure({ title: 'This is the String Assertion Error ################# 10', content: failMessage });
-//   //   }
-//
-//     // if (!ASB.get("SOFT_ASSERT")) {
-//     //   throw error; // Rethrow to fail the test if not in soft assert mode
-//     // }
-//   // } finally {
-//   //   // allureReporter.endStep();
-//   // }
-// }
-
-// const { expect } = import('expect-webdriverio');
-// const softAssert = expect;
-
 const errors = [];
 
 async function expectAdv(actual, assertionType, expected, message, operator) {
@@ -170,6 +82,7 @@ function throwCollectedErrors() {
     }
   }
 }
+
 
 
 // TODO: add function to record failed assertions and pass it to the end so that the test fails.
