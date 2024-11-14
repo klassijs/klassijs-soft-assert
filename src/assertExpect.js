@@ -32,7 +32,9 @@ console.error = function (message) {
  */
 async function assertExpect(actual, assertionType, expected, message, operator) {
   const { expect } = await import('expect-webdriverio');
+  const {chai} = await import('chai');
   const softAssert = expect;
+  const assert = chai.assert;
 
   try {
     const getAssertionType = {
@@ -61,8 +63,24 @@ async function assertExpect(actual, assertionType, expected, message, operator) 
       tohavetext: async () => await handleTextAssertion(actual, expected),
       containstext: async () => await handleTextAssertion(actual, expected),
 
+      toNotEqual: async () => assert(actual).notEqual(expected),
+      isOK: async () => assert(actual).isOk(),
+      equal: async () => assert(actual).equal(expected),
+      notEqual: async () => assert(actual).notEqual(expected),
+      isTrue: async () => assert(actual).isTrue(),
+      isFalse: async () => assert(actual).isFalse(),
+      isNull: async () => assert(actual).isNull(),
+      notExists: async () => assert(actual).notExists(),
+      isUndefined: async () => assert(actual).isUndefined(),
+      isString: async () => assert(actual).isString(),
+      typeOf: async () => assert(actual).typeOf(expected),
+      isArray: async () => assert(actual).isArray(),
+      include: async () => assert(actual).include(expected),
+      notInclude: async () => assert(actual).notInclude(expected),
+      match: async () => assert(actual).match(expected),
+      lengthOf: async () => assert(actual).lengthOf(expected),
       default: () => {
-        const errorMsg = `Invalid assertion type: "${assertionType}". Valid assertion types are: "equals", "contains", "doesexist", "doesnotexist", "isnotenabled", "doesnotcontain", "isdisabled", "tobedisabled", "tobeclickable", "isenabled", "tobeenabled", "tobeselected", "tobechecked", "tohavehtml", "tobefocused", "tobepresent", "tobedisplayed", "exists", "toexist", "tobeexisting", "tohavetitle", "tohaveurl", "tohavetext", "containstext".`;
+        const errorMsg = `Invalid assertion type: "${assertionType}". Valid assertion types are: "equals", "contains", "doesexist", "doesnotexist", "isnotenabled", "doesnotcontain", "isdisabled", "tobedisabled", "tobeclickable", "isenabled", "tobeenabled", "tobeselected", "tobechecked", "tohavehtml", "tobefocused", "tobepresent", "tobedisplayed", "exists", "toexist", "tobeexisting", "tohavetitle", "tohaveurl", "tohavetext", "containstext", "toNotEqual", "isOK", "equal", "notEqual", "isTrue", "isFalse", "isNull", "notExists", "isUndefined", "isString", "typeOf", "isArray", "include", "notInclude", "match", "lengthOf".`;
         throw new Error(errorMsg);
       }
     };
