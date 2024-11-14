@@ -1,5 +1,5 @@
 {
-  "name": "klassijs-expectadv",
+  "name": "klassijs-assertion-tool",
   "version": "1.0.0",
   "description": "",
   "creator": {
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/klassijs/klassijs-expectAdv.git"
+    "url": "https://github.com/klassijs/klassijs-assertion-tool.git"
   },
   "private": true,
   "dependencies": {

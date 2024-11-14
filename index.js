@@ -1,3 +1,3 @@
-const {expectAdv, assertAdv, throwCollectedErrors} = require('./src/expectAdv');
+const {assertExpect, throwCollectedErrors} = require('./src/assertExpect');
 
-module.exports = {expectAdv, assertAdv, throwCollectedErrors};
+module.exports = {assertExpect, throwCollectedErrors};

@@ -30,7 +30,7 @@ console.error = function (message) {
  * @param operator
  * @returns {Promise<void>}
  */
-async function expectAdv(actual, assertionType, expected, message, operator) {
+async function assertExpect(actual, assertionType, expected, message, operator) {
   const { expect } = await import('expect-webdriverio');
   const softAssert = expect;
 
@@ -129,18 +129,4 @@ function throwCollectedErrors() {
   }
 }
 
-/**
- * This function makes using assert easier by just passing the assertion type and values
- * it will not fail the test right away but allow the other asserts to be executed
- * @param actual {any}
- * @param assertionType {string}
- * @param expected {any}
- * @param message {string}
- * @param operator {any}
- * @returns {Promise<void>}
- */
-async function assertAdv(actual, assertionType, expected, message, operator){
-  await expectAdv(actual, assertionType, expected, message, operator);
-}
-
-module.exports = { expectAdv, assertAdv, throwCollectedErrors };
+module.exports = { assertExpect, throwCollectedErrors };
