@@ -55,7 +55,6 @@ async function assertExpect(actual, assertionType, expected, message, operator) 
       tobefocused: async () => await softAssert(await actual).toBeFocused(),
       tobepresent: async () => await softAssert(await actual).toBePresent(),
       tobedisplayed: async () => await softAssert(await actual).toBeDisplayed(),
-      exists: async () => await softAssert(await actual).toBeExisting(),
       toexist: async () => await softAssert(await actual).toBeExisting(),
       tobeexisting: async () => await softAssert(await actual).toBeExisting(),
       tohavetitle: async () => await softAssert(await actual).toHaveTitle(expected),
@@ -63,13 +62,18 @@ async function assertExpect(actual, assertionType, expected, message, operator) 
       tohavetext: async () => await handleTextAssertion(actual, expected),
       containstext: async () => await handleTextAssertion(actual, expected),
 
-      toNotEqual: async () => assert.notEqual(actual, expected),
       isOK: async () => assert.isOk(actual),
+      isNotOk: async () => assert.isNotOk(actual),
       equal: async () => assert.equal(actual, expected),
       notEqual: async () => assert.notEqual(actual, expected),
+      toNotEqual: async () => assert.notEqual(actual, expected),
       isTrue: async () => assert.isTrue(actual),
+      isNotTrue: async () => assert.isNotTrue(actual),
       isFalse: async () => assert.isFalse(actual),
+      isNotFalse: async () => assert.isNotFalse(actual),
       isNull: async () => assert.isNull(actual),
+      isNotNull: async () => assert.isNotNull(actual),
+      exists: async () => assert.exists(actual),
       notExists: async () => assert.notExists(actual),
       isUndefined: async () => assert.isUndefined(actual),
       isString: async () => assert.isString(actual),
@@ -79,6 +83,8 @@ async function assertExpect(actual, assertionType, expected, message, operator) 
       notInclude: async () => assert.notInclude(actual, expected),
       match: async () => assert.match(actual, expected),
       lengthOf: async () => assert.lengthOf(actual, expected),
+      isEmpty: async () => assert.isEmpty(actual),
+      isNotEmpty: async () => assert.isNotEmpty(actual),
 
       default: () => {
         const errorMsg = `Invalid assertion type: "${assertionType}". Valid assertion types are: "equals", "contains", "doesexist", "doesnotexist", "isnotenabled", "doesnotcontain", "isdisabled", "tobedisabled", "tobeclickable", "isenabled", "tobeenabled", "tobeselected", "tobechecked", "tohavehtml", "tobefocused", "tobepresent", "tobedisplayed", "exists", "toexist", "tobeexisting", "tohavetitle", "tohaveurl", "tohavetext", "containstext", "toNotEqual", "isOK", "equal", "notEqual", "isTrue", "isFalse", "isNull", "notExists", "isUndefined", "isString", "typeOf", "isArray", "include", "notInclude", "match", "lengthOf".`;
