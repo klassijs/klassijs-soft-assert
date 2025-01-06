@@ -1,6 +1,4 @@
-# Klassijs 'softAssert' Assertion Tool
-
----
+# Klassijs 'soft assert' Assertion Tool
 
 ## Overview
 
@@ -18,11 +16,11 @@ To add the Assertion Tool to your project, follow these steps:
 
 1. Add to project:
    ```bash
-   pnpm add klassijs-assertion-tool
+   pnpm add klassijs-soft-assert
    ```
 2. Import the tool into your test files:
    ```javascript
-   const assertExpect = require('klassijs-assertion-tool');
+   const softAssert = require('klassijs-soft-assert');
    ```
 
 ## Usage
@@ -30,7 +28,7 @@ To add the Assertion Tool to your project, follow these steps:
 1. **Use the assertion methods**:
    Use the assertion methods as you normally would. If an assertion fails, it will not stop the test:
    ```javascript
-    await assertExpect(actual, assertionType, expected, message, operator);
+    await softAssert(actual, assertionType, expected, message, operator);
    ```
 
 2. **The report**:
@@ -41,14 +39,14 @@ To add the Assertion Tool to your project, follow these steps:
 Here’s a simple example of how to use the Assertion Tool:
 
 ```javascript
-const assertExpect = require('klassijs-assertion-tool');
+const softAssert = require('klassijs-soft-assert');
 
 describe('Sample Test Suite', async() => {
     it('should run all tests and report failed assertions', () => {
-      await assertExpect(title, 'tohavetext', 'our priority', 'This will pass');
-      await assertExpect(title, 'tohavetext', 'our priorities', 'This will fail');
-      await assertExpect(elem.elementId,'equal', null, 'This will pass');
-      await assertExpect(elem.elementId,'toNotEqual', null, 'This will fail');
+      await softAssert(title, 'tohavetext', 'our priority', 'This will pass');
+      await softAssert(title, 'tohavetext', 'our priorities', 'This will fail');
+      await softAssert(elem.elementId,'equal', null, 'This will pass');
+      await softAssert(elem.elementId,'toNotEqual', null, 'This will fail');
     });
 });
 ```
@@ -59,6 +57,4 @@ Contributions are welcome! If you have suggestions for improvements or bug fixes
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
-
----
+This project is licensed under the MIT License.
