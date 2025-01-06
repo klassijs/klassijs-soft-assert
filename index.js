@@ -1,3 +1,3 @@
-const {assertExpect, throwCollectedErrors} = require('./src/assertExpect');
+const {softAssert, throwCollectedErrors} = require('./src/assertExpect');
 
-module.exports = {assertExpect, throwCollectedErrors};
+module.exports = {softAssert, throwCollectedErrors};

@@ -30,35 +30,35 @@ console.error = function (message) {
  * @param operator
  * @returns {Promise<void>}
  */
-async function assertExpect(actual, assertionType, expected, message, operator) {
+async function softAssert(actual, assertionType, expected, message, operator) {
   const { expect } = await import('expect-webdriverio');
   const chai = await import('chai');
-  const softAssert = expect;
+  const assertExpect = expect;
   const assert = chai.assert;
 
   try {
     const getAssertionType = {
-      equals: async () => await softAssert(actual).toEqual(expected),
-      contains: async () => await softAssert(actual).toContain(expected),
-      doesexist: async () => await softAssert(await actual).toBeExisting(),
-      doesnotexist: async () => await softAssert(await actual).not.toBeExisting(),
-      isnotenabled: async () => await softAssert(await actual).not.toBeEnabled(),
-      doesnotcontain: async () => await softAssert(actual).not.toContain(expected),
-      isdisabled: async () => await softAssert(await actual).toBeDisabled(),
-      tobedisabled: async () => await softAssert(await actual).toBeDisabled(),
-      tobeclickable: async () => await softAssert(await actual).toBeClickable(),
-      isenabled: async () => await softAssert(await actual).toBeEnabled(),
-      tobeenabled: async () => await softAssert(await actual).toBeEnabled(),
-      tobeselected: async () => await softAssert(await actual).toBeSelected(),
-      tobechecked: async () => await softAssert(await actual).toBeChecked(),
-      tohavehtml: async () => await softAssert(await actual).toHaveHTML(expected),
-      tobefocused: async () => await softAssert(await actual).toBeFocused(),
-      tobepresent: async () => await softAssert(await actual).toBePresent(),
-      tobedisplayed: async () => await softAssert(await actual).toBeDisplayed(),
-      toexist: async () => await softAssert(await actual).toBeExisting(),
-      tobeexisting: async () => await softAssert(await actual).toBeExisting(),
-      tohavetitle: async () => await softAssert(await actual).toHaveTitle(expected),
-      tohaveurl: async () => await softAssert(await actual).toHaveUrl(expected),
+      equals: async () => await assertExpect(actual).toEqual(expected),
+      contains: async () => await assertExpect(actual).toContain(expected),
+      doesexist: async () => await assertExpect(await actual).toBeExisting(),
+      doesnotexist: async () => await assertExpect(await actual).not.toBeExisting(),
+      isnotenabled: async () => await assertExpect(await actual).not.toBeEnabled(),
+      doesnotcontain: async () => await assertExpect(actual).not.toContain(expected),
+      isdisabled: async () => await assertExpect(await actual).toBeDisabled(),
+      tobedisabled: async () => await assertExpect(await actual).toBeDisabled(),
+      tobeclickable: async () => await assertExpect(await actual).toBeClickable(),
+      isenabled: async () => await assertExpect(await actual).toBeEnabled(),
+      tobeenabled: async () => await assertExpect(await actual).toBeEnabled(),
+      tobeselected: async () => await assertExpect(await actual).toBeSelected(),
+      tobechecked: async () => await assertExpect(await actual).toBeChecked(),
+      tohavehtml: async () => await assertExpect(await actual).toHaveHTML(expected),
+      tobefocused: async () => await assertExpect(await actual).toBeFocused(),
+      tobepresent: async () => await assertExpect(await actual).toBePresent(),
+      tobedisplayed: async () => await assertExpect(await actual).toBeDisplayed(),
+      toexist: async () => await assertExpect(await actual).toBeExisting(),
+      tobeexisting: async () => await assertExpect(await actual).toBeExisting(),
+      tohavetitle: async () => await assertExpect(await actual).toHaveTitle(expected),
+      tohaveurl: async () => await assertExpect(await actual).toHaveUrl(expected),
       tohavetext: async () => await handleTextAssertion(actual, expected),
       containstext: async () => await handleTextAssertion(actual, expected),
 
@@ -154,4 +154,4 @@ function throwCollectedErrors() {
   }
 }
 
-module.exports = { assertExpect, throwCollectedErrors };
+module.exports = { softAssert, throwCollectedErrors };
