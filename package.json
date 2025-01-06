@@ -9,6 +9,16 @@
     "youtube": "https://youtube.com/@LarryG_01"
   },
   "license": "MIT",
+  "keywords": [
+    "chai",
+    "expect-webdriverio",
+    "javascript",
+    "expect",
+    "assert",
+    "soft-assert",
+    "testing",
+    "assertions"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
