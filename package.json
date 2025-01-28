@@ -1,6 +1,6 @@
 {
   "name": "klassijs-soft-assert",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "The Assertion Tool is designed to enhance your testing framework by allowing tests to continue running even when assertions fail. Instead of halting the test upon an assertion failure, it will capture the error and continue running the test suite.",
   "creator": {
     "name": "Larry Goddard",
@@ -13,6 +13,8 @@
     "chai",
     "expect-webdriverio",
     "javascript",
+    "klassijs",
+    "klassi-js",
     "expect",
     "assert",
     "soft-assert",
