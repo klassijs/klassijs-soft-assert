@@ -30,8 +30,8 @@
     "url": "https://github.com/klassijs/klassijs-soft-assert.git"
   },
   "dependencies": {
-    "@wdio/globals": "^9.2.8",
+    "@wdio/globals": "^9.7.1",
     "chai": "^5.1.2",
-    "expect-webdriverio": "^5.0.3"
+    "expect-webdriverio": "^5.0.5"
   }
 }
