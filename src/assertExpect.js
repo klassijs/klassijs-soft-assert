@@ -147,10 +147,6 @@ function throwCollectedErrors() {
       cucumberThis.attach(`Attachment (text/plain): ${consoleMessage}`);
     }
     throw new Error(consoleMessage);
-  } else {
-    if (cucumberThis && cucumberThis.attach) {
-      cucumberThis.attach(`<div style="color:green;">No assertion errors collected.</div>`);
-    }
   }
 }
 
