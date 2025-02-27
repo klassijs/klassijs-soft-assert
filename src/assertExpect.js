@@ -92,13 +92,9 @@ async function softAssert(actual, assertionType, expected, message, operator) {
       }
     };
     await (getAssertionType[assertionType] || getAssertionType['default'])();
-    message = `Assertion Passes: Valid Assertion Type = ${assertionType}`;
-    if (cucumberThis && cucumberThis.attach) {
-      cucumberThis.attach(`<div style="color:green;"> ${message} </div>`);
-    }
   } catch (err) {
     const filteredActual = typeof actual === 'string' ? actual.replace(/[<>]/g, '') : actual;
-    const errmsg =
+    errmsg =
       `Assertion Failure: Invalid Assertion Type = ${assertionType}` +
       '\n' +
       `Assertion failed: expected ${filteredActual} to ${assertionType} ${expected}`;
