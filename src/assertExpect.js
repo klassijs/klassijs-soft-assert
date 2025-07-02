@@ -142,6 +142,7 @@ function throwCollectedErrors() {
     if (cucumberThis && cucumberThis.attach) {
       cucumberThis.attach(`Attachment (text/plain): ${consoleMessage}`);
     }
+    errors.length = 0; // Empty error buffer
     throw new Error(consoleMessage);
   }
 }
