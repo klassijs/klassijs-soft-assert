@@ -103,7 +103,6 @@ async function softAssert(actual, assertionType, expected, message, operator) {
     if (cucumberThis && cucumberThis.attach) {
       cucumberThis.attach(`<div style="color:red;"> ${errmsg} </div>`);
     }
-    err.message = errmsg;
     errors.push(err);
   }
 }
