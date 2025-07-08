@@ -142,7 +142,7 @@ function throwCollectedErrors() {
     const cleanConsoleOutput = consoleOutput.replace(/\x1b\[[0-9;]*m/g, ''); // Remove color codes
     const consoleMessage = `<div style="color:red;">${fullErrorMessage}</div>\n${cleanConsoleOutput}`;
     if (cucumberThis && cucumberThis.attach) {
-      cucumberThis.attach(`${fullErrorMessage}\n${cleanConsoleOutput}`);
+      cucumberThis.attach(`${consoleMessage}`);
     }
     errors.length = 0; // Empty error buffer
     throw new Error(consoleMessage);
