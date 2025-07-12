@@ -20,7 +20,7 @@ To add the Assertion Tool to your project, follow these steps:
    ```
 2. Import the tool into your test files:
    ```javascript
-   const softAssert = require('klassijs-soft-assert');
+   const { softAssert } = require('klassijs-soft-assert');
    ```
 
 ## Usage

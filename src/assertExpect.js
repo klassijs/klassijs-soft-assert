@@ -94,10 +94,12 @@ async function softAssert(actual, assertionType, expected, message, operator) {
     await (getAssertionType[assertionType] || getAssertionType['default'])();
   } catch (err) {
     const filteredActual = typeof actual === 'string' ? actual.replace(/[<>]/g, '') : actual;
-    errmsg =
-      `Assertion Failure: Invalid Assertion Type = ${assertionType}` +
-      '\n' +
-      `Assertion failed: expected ${filteredActual} to ${assertionType} ${expected}`;
+    let errmsg;
+    if (message) {
+      errmsg = `${message} (Assertion failed: expected ${filteredActual} to ${operator ? operator : assertionType}${expected ? ' '+expected : ''})`;
+    } else {
+      errmsg = `Assertion failed: expected ${filteredActual} to ${operator ? operator : assertionType}${expected ? ' '+expected : ''}`;
+    }
     if (cucumberThis && cucumberThis.attach) {
       cucumberThis.attach(`<div style="color:red;"> ${errmsg} </div>`);
     }
@@ -140,7 +142,7 @@ function throwCollectedErrors() {
     const cleanConsoleOutput = consoleOutput.replace(/\x1b\[[0-9;]*m/g, ''); // Remove color codes
     const consoleMessage = `<div style="color:red;">${fullErrorMessage}</div>\n${cleanConsoleOutput}`;
     if (cucumberThis && cucumberThis.attach) {
-      cucumberThis.attach(`Attachment (text/plain): ${consoleMessage}`);
+      cucumberThis.attach(`${consoleMessage}`);
     }
     errors.length = 0; // Empty error buffer
     throw new Error(consoleMessage);
