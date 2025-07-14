@@ -37,8 +37,15 @@ async function initializeLibraries() {
     
     // Use dynamic import for Chai v5 (ES module)
     const chaiModule = await import('chai');
-    chai = chaiModule.default || chaiModule;
-    assert = chai.assert || chaiModule.assert;
+    
+    // Handle different Chai export patterns
+    if (chaiModule.default) {
+      chai = chaiModule.default;
+      assert = chaiModule.default.assert;
+    } else {
+      chai = chaiModule;
+      assert = chaiModule.assert;
+    }
     
     // Final check
     if (!assert) {
