@@ -21,7 +21,6 @@ console.error = function (message) {
   originalConsoleError.apply(console, arguments);
 };
 
-// Global variables to store the imported libraries
 let expectWebdriverIO = null;
 let chai = null;
 let assert = null;
@@ -35,7 +34,6 @@ async function initializeLibraries() {
     const expectModule = await import('expect-webdriverio');
     expectWebdriverIO = expectModule.expect;
 
-    // Use dynamic import for Chai v5 (ES module)
     const chaiModule = await import('chai');
 
     // Handle different Chai export patterns
@@ -47,7 +45,6 @@ async function initializeLibraries() {
       assert = chaiModule.assert;
     }
 
-    // Final check
     if (!assert) {
       throw new Error('Could not initialize Chai assert. Please check your Chai installation.');
     }
