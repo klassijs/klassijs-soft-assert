@@ -32,6 +32,8 @@ To add the Assertion Tool to your project, follow these steps:
 The `softAssert` function now accepts any Chai or expect-webdriverio method directly:
 
 ```javascript
+const { softAssert } = require('klassijs-soft-assert');
+
 // Any Chai assert method
 await softAssert(actual, 'deepEqual', expected, 'Deep equality check');
 await softAssert(actual, 'isArray', undefined, 'Should be an array');
@@ -58,6 +60,9 @@ await softAssert(actual, async (actual, expected) => {
 Your existing code continues to work unchanged:
 
 ```javascript
+const { softAssert } = require('klassijs-soft-assert');
+
+// Predefined assertion types
 await softAssert(actual, 'equals', expected, 'message');
 await softAssert(actual, 'tohavetext', expected, 'message');
 ```
@@ -101,43 +106,43 @@ await softAssertExpect(async () => {
 Here's a comprehensive example showing the enhanced functionality:
 
 ```javascript
-const { 
-  softAssert, 
-  getExpect, 
-  getChai, 
-  getAssert, 
-  softAssertChai, 
-  softAssertExpect,
-  throwCollectedErrors 
+const {
+   softAssert,
+   getExpect,
+   getChai,
+   getAssert,
+   softAssertChai,
+   softAssertExpect,
+   throwCollectedErrors
 } = require('klassijs-soft-assert');
 
 describe('Sample Test Suite', async() => {
-    it('should run all tests and report failed assertions', async () => {
+   it('should run all tests and report failed assertions', async () => {
       // Method 1: Enhanced softAssert with full API access
       await softAssert(title, 'toHaveText', 'our priority', 'This will pass');
       await softAssert(elem.elementId, 'deepEqual', null, 'This will pass');
       await softAssert(element, 'toBeDisplayed', undefined, 'Element should be displayed');
       await softAssert(element, 'not.toBeEnabled', undefined, 'Element should not be enabled');
-      
-      // Method 2: Backward compatible (your existing approach)
+
+      // Method 2: Backward compatible
       await softAssert(title, 'tohavetext', 'our priority', 'This will pass');
       await softAssert(elem.elementId,'equal', null, 'This will pass');
 
       // Method 3: Custom function
       await softAssert(actual, async (actual, expected) => {
-        const assert = await getAssert();
-        assert.deepEqual(actual, expected);
+         const assert = await getAssert();
+         assert.deepEqual(actual, expected);
       }, expected, 'Custom deep equality check');
 
-      // Method 4: Direct library usage (will fail immediately)
+      // Method 4: Direct library usage (fails immediately)
       const assert = await getAssert();
       assert.isArray(myArray);
-    });
+   });
 
-    afterEach(async () => {
+   afterEach(async () => {
       // Throw all collected errors at the end
       throwCollectedErrors();
-    });
+   });
 });
 ```
 
@@ -145,7 +150,7 @@ describe('Sample Test Suite', async() => {
 
 - `softAssert(actual, assertionType, expected, message, operator)` - Enhanced function that accepts any Chai/expect-webdriverio method
 - `getExpect()` - Get the full expect-webdriverio instance
-- `getChai()` - Get the full Chai instance  
+- `getChai()` - Get the full Chai instance
 - `getAssert()` - Get the Chai assert instance
 - `softAssertChai(assertionFunction, message)` - Wrap any Chai assertion in soft assert
 - `softAssertExpect(assertionFunction, message)` - Wrap any expect-webdriverio assertion in soft assert

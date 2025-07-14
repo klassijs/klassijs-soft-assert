@@ -33,10 +33,17 @@ let assert = null;
 async function initializeLibraries() {
   if (!expectWebdriverIO || !chai) {
     const expectModule = await import('expect-webdriverio');
-    const chaiModule = await import('chai');
     expectWebdriverIO = expectModule.expect;
-    chai = chaiModule.default;
-    assert = chai.assert;
+    
+    // Use dynamic import for Chai v5 (ES module)
+    const chaiModule = await import('chai');
+    chai = chaiModule.default || chaiModule;
+    assert = chai.assert || chaiModule.assert;
+    
+    // Final check
+    if (!assert) {
+      throw new Error('Could not initialize Chai assert. Please check your Chai installation.');
+    }
   }
 }
 
