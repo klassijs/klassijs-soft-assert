@@ -21,22 +21,115 @@ console.error = function (message) {
   originalConsoleError.apply(console, arguments);
 };
 
+// Global variables to store the imported libraries
+let expectWebdriverIO = null;
+let chai = null;
+let assert = null;
+
 /**
- * This function makes using assert easier by just passing the assertion type and values
- * @param actual
- * @param assertionType
- * @param expected
- * @param message
- * @param operator
+ * Initialize the libraries (called once)
+ * @returns {Promise<void>}
+ */
+async function initializeLibraries() {
+  if (!expectWebdriverIO || !chai) {
+    const expectModule = await import('expect-webdriverio');
+    const chaiModule = await import('chai');
+    expectWebdriverIO = expectModule.expect;
+    chai = chaiModule.default;
+    assert = chai.assert;
+  }
+}
+
+/**
+ * Get the full expect-webdriverio instance
+ * @returns {Promise<Object>}
+ */
+async function getExpect() {
+  await initializeLibraries();
+  return expectWebdriverIO;
+}
+
+/**
+ * Get the full Chai instance
+ * @returns {Promise<Object>}
+ */
+async function getChai() {
+  await initializeLibraries();
+  return chai;
+}
+
+/**
+ * Get the Chai assert instance
+ * @returns {Promise<Object>}
+ */
+async function getAssert() {
+  await initializeLibraries();
+  return assert;
+}
+
+/**
+ * Enhanced softAssert function that can handle any Chai or expect-webdriverio method
+ * @param actual - The actual value to test
+ * @param assertionType - Either a predefined type or a function
+ * @param expected - The expected value (optional for function calls)
+ * @param message - Optional error message
+ * @param operator - Optional operator (for backward compatibility)
  * @returns {Promise<void>}
  */
 async function softAssert(actual, assertionType, expected, message, operator) {
-  const { expect } = await import('expect-webdriverio');
-  const chai = await import('chai');
-  const assertExpect = expect;
-  const assert = chai.assert;
+  await initializeLibraries();
+  const assertExpect = expectWebdriverIO;
 
   try {
+    // If assertionType is a function, execute it directly
+    if (typeof assertionType === 'function') {
+      await assertionType(actual, expected);
+      return;
+    }
+
+    // If assertionType is a string, check if it's a direct method call
+    if (typeof assertionType === 'string') {
+      // Check if it's a Chai assert method
+      if (assert[assertionType]) {
+        if (expected !== undefined) {
+          assert[assertionType](actual, expected);
+        } else {
+          assert[assertionType](actual);
+        }
+        return;
+      }
+
+      // Check if it's an expect-webdriverio method
+      if (assertExpect(actual)[assertionType]) {
+        if (expected !== undefined) {
+          await assertExpect(actual)[assertionType](expected);
+        } else {
+          await assertExpect(actual)[assertionType]();
+        }
+        return;
+      }
+
+      // Check if it's a chained expect-webdriverio method (like .not.toBeEnabled())
+      const methodParts = assertionType.split('.');
+      if (methodParts.length > 1) {
+        let expectChain = assertExpect(actual);
+        for (const part of methodParts) {
+          if (part === 'not') {
+            expectChain = expectChain.not;
+          } else {
+            expectChain = expectChain[part];
+          }
+        }
+        if (expected !== undefined) {
+          await expectChain(expected);
+        } else {
+          await expectChain();
+        }
+        return;
+      }
+    }
+
+    // Fallback to predefined assertion types for backward compatibility
     const getAssertionType = {
       equals: async () => await assertExpect(actual).toEqual(expected),
       contains: async () => await assertExpect(actual).toContain(expected),
@@ -87,7 +180,7 @@ async function softAssert(actual, assertionType, expected, message, operator) {
       isNotEmpty: async () => assert.isNotEmpty(actual),
 
       default: () => {
-        const errorMsg = `Invalid assertion type: "${assertionType}". Valid assertion types are: "equals", "contains", "doesexist", "doesnotexist", "isnotenabled", "doesnotcontain", "isdisabled", "tobedisabled", "tobeclickable", "isenabled", "tobeenabled", "tobeselected", "tobechecked", "tohavehtml", "tobefocused", "tobepresent", "tobedisplayed", "exists", "toexist", "tobeexisting", "tohavetitle", "tohaveurl", "tohavetext", "containstext", "toNotEqual", "isOK", "equal", "notEqual", "isTrue", "isFalse", "isNull", "notExists", "isUndefined", "isString", "typeOf", "isArray", "include", "notInclude", "match", "lengthOf".`;
+        const errorMsg = `Invalid assertion type: "${assertionType}". You can use any Chai assert method, expect-webdriverio method, predefined types, or pass a function.`;
         throw new Error(errorMsg);
       }
     };
@@ -114,8 +207,8 @@ async function softAssert(actual, assertionType, expected, message, operator) {
  * @returns {Promise<void>}
  */
 async function handleTextAssertion(actual, expected) {
-  const { expect } = await import('expect-webdriverio');
-  const softAssert = expect;
+  await initializeLibraries();
+  const softAssert = expectWebdriverIO;
 
   if (typeof actual === 'string') {
     await softAssert(actual).toContain(expected);
@@ -149,4 +242,50 @@ function throwCollectedErrors() {
   }
 }
 
-module.exports = { softAssert, throwCollectedErrors };
+/**
+ * Soft assert wrapper for any Chai assertion
+ * @param assertionFunction {Function} - The Chai assertion function to execute
+ * @param message {string} - Optional error message
+ * @returns {Promise<void>}
+ */
+async function softAssertChai(assertionFunction, message) {
+  await initializeLibraries();
+  try {
+    await assertionFunction();
+  } catch (err) {
+    const errmsg = message ? `${message} (${err.message})` : err.message;
+    if (cucumberThis && cucumberThis.attach) {
+      cucumberThis.attach(`<div style="color:red;"> ${errmsg} </div>`);
+    }
+    errors.push(err);
+  }
+}
+
+/**
+ * Soft assert wrapper for any expect-webdriverio assertion
+ * @param assertionFunction {Function} - The expect-webdriverio assertion function to execute
+ * @param message {string} - Optional error message
+ * @returns {Promise<void>}
+ */
+async function softAssertExpect(assertionFunction, message) {
+  await initializeLibraries();
+  try {
+    await assertionFunction();
+  } catch (err) {
+    const errmsg = message ? `${message} (${err.message})` : err.message;
+    if (cucumberThis && cucumberThis.attach) {
+      cucumberThis.attach(`<div style="color:red;"> ${errmsg} </div>`);
+    }
+    errors.push(err);
+  }
+}
+
+module.exports = { 
+  softAssert, 
+  throwCollectedErrors, 
+  getExpect, 
+  getChai, 
+  getAssert,
+  softAssertChai,
+  softAssertExpect
+};
