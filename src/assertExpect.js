@@ -34,10 +34,10 @@ async function initializeLibraries() {
   if (!expectWebdriverIO || !chai) {
     const expectModule = await import('expect-webdriverio');
     expectWebdriverIO = expectModule.expect;
-    
+
     // Use dynamic import for Chai v5 (ES module)
     const chaiModule = await import('chai');
-    
+
     // Handle different Chai export patterns
     if (chaiModule.default) {
       chai = chaiModule.default;
@@ -46,7 +46,7 @@ async function initializeLibraries() {
       chai = chaiModule;
       assert = chaiModule.assert;
     }
-    
+
     // Final check
     if (!assert) {
       throw new Error('Could not initialize Chai assert. Please check your Chai installation.');
@@ -294,11 +294,11 @@ async function softAssertExpect(assertionFunction, message) {
   }
 }
 
-module.exports = { 
-  softAssert, 
-  throwCollectedErrors, 
-  getExpect, 
-  getChai, 
+module.exports = {
+  softAssert,
+  throwCollectedErrors,
+  getExpect,
+  getChai,
   getAssert,
   softAssertChai,
   softAssertExpect
